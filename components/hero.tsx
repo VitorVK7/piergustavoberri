@@ -30,7 +30,7 @@ export function Hero() {
             </h1>
             
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
-              Há mais de 22 anos orientando pessoas e empresas com prazos organizados, 
+              Há mais de 22 anos, Pier orienta pessoas e empresas com prazos organizados, 
               transparência total e acompanhamento próximo em cada etapa do processo.
             </p>
             
