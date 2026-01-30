@@ -1,9 +1,20 @@
+"use client"
+
+import { useMetaTracking } from "@/hooks/use-meta-tracking"
+
 export function WhatsAppButton() {
+  const { trackWhatsAppClick } = useMetaTracking()
+
+  const handleClick = () => {
+    trackWhatsAppClick()
+  }
+
   return (
     <a
       href="https://wa.me/554733795482"
       target="_blank"
       rel="noopener noreferrer"
+      onClick={handleClick}
       className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 touch-manipulation"
       aria-label="Falar no WhatsApp"
     >
