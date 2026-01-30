@@ -1,7 +1,8 @@
-import React from "react"
+import React, { Suspense } from "react"
 import type { Metadata } from 'next'
 import { Playfair_Display, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { MetaPixel, MetaPixelPageView } from '@/components/meta-pixel'
 import './globals.css'
 
 const playfairDisplay = Playfair_Display({ 
@@ -64,7 +65,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
+      <head>
+        <MetaPixel />
+      </head>
       <body className={`${inter.variable} ${playfairDisplay.variable} font-sans antialiased`}>
+        <Suspense fallback={null}>
+          <MetaPixelPageView />
+        </Suspense>
         {children}
         <Analytics />
       </body>
