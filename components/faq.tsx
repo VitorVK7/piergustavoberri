@@ -18,10 +18,6 @@ export function FAQ() {
       question: 'Como começar?',
       answer: 'Separe documentos básicos e envie o formulário; retornamos com os próximos passos.',
     },
-    {
-      question: 'Meus dados estão seguros?',
-      answer: 'Sim. Seguimos a LGPD (Lei 13.709/2018) e seus dados são utilizados exclusivamente para fins de atendimento jurídico. Não compartilhamos informações com terceiros.',
-    },
   ]
 
   return (

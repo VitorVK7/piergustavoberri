@@ -1,126 +1,58 @@
 import { NextResponse } from "next/server"
-import { leadSchema } from "@/lib/validations"
-import { appendLeadRow } from "@/lib/googleSheets"
+import { appendLeadToSheet } from "@/lib/googleSheets"
 import { sendLeadNotification } from "@/lib/email"
-
-// Force Node.js runtime (not Edge)
-export const runtime = "nodejs"
-
-// Simple in-memory rate limit (per IP, 5 requests per minute)
-const rateMap = new Map<string, { count: number; resetAt: number }>()
-const RATE_LIMIT = 5
-const RATE_WINDOW_MS = 60_000
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const entry = rateMap.get(ip)
-
-  if (!entry || now > entry.resetAt) {
-    rateMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS })
-    return true
-  }
-
-  if (entry.count >= RATE_LIMIT) {
-    return false
-  }
-
-  entry.count++
-  return true
-}
 
 export async function POST(request: Request) {
   try {
-    // Rate limit
-    const ip =
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      request.headers.get("x-real-ip") ||
-      "unknown"
-
-    if (!checkRateLimit(ip)) {
-      return NextResponse.json(
-        { ok: false, error: "too_many_requests" },
-        { status: 429 }
-      )
-    }
-
     const body = await request.json()
+    
+    const { name, whatsapp, email, subject, message } = body
 
-    // Validate with Zod
-    const parsed = leadSchema.safeParse(body)
-
-    if (!parsed.success) {
-      const errors = parsed.error.flatten().fieldErrors
+    // Validate required fields
+    if (!name || !whatsapp || !subject || !message) {
       return NextResponse.json(
-        { ok: false, error: "validation_error", details: errors },
+        { error: "Campos obrigatorios nao preenchidos" },
         { status: 400 }
       )
     }
 
-    const data = parsed.data
-
-    // Check honeypot
-    if (data._hp && data._hp.length > 0) {
-      // Silently accept but don't process (fool bots)
-      return NextResponse.json({ ok: true, leadId: "ignored" })
+    // Honeypot check
+    if (body.website) {
+      return NextResponse.json({ success: true })
     }
 
-    // Generate lead ID and timestamp
-    const leadId = crypto.randomUUID()
-    const timestamp = new Date().toISOString()
+    // Format timestamp
+    const now = new Date()
+    const createdAt = now.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })
 
-    // Build row for Google Sheets
-    const row = [
-      leadId,
-      timestamp,
-      data.nome,
-      data.email,
-      data.whatsapp,
-      data.assunto,
-      data.mensagem || "",
-      data.page_url || "",
-      data.referrer || "",
-      data.utm_source || "",
-      data.utm_medium || "",
-      data.utm_campaign || "",
-      data.utm_content || "",
-      data.utm_term || "",
-    ]
-
-    // Save to Google Sheets + send email in parallel
-    const emailData = {
-      leadId,
-      timestamp,
-      nome: data.nome,
-      email: data.email,
-      whatsapp: data.whatsapp,
-      assunto: data.assunto,
-      mensagem: data.mensagem || "",
-      page_url: data.page_url || "",
-      referrer: data.referrer || "",
-      utm_source: data.utm_source || "",
-      utm_medium: data.utm_medium || "",
-      utm_campaign: data.utm_campaign || "",
-      utm_content: data.utm_content || "",
-      utm_term: data.utm_term || "",
+    const leadData = {
+      name: name.trim(),
+      whatsapp: whatsapp.trim(),
+      email: (email || "").trim(),
+      subject,
+      message: message.trim(),
+      source: body.source || "site",
+      createdAt,
     }
 
+    // Save to Google Sheets and send email in parallel
     const results = await Promise.allSettled([
-      appendLeadRow(row),
-      sendLeadNotification(emailData),
+      appendLeadToSheet(leadData),
+      sendLeadNotification(leadData),
     ])
 
-    // Log failures but still return success to user
+    // Log any errors but still return success to user
     for (const result of results) {
       if (result.status === "rejected") {
-        console.error("[leads] Background task failed:", result.reason)
+        console.error("[Leads] Automation error:", result.reason)
       }
     }
 
-    return NextResponse.json({ ok: true, leadId })
+    return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("[leads] Internal error:", error)
+    console.error("[Leads] API error:", error)
     return NextResponse.json(
-      { ok: false, error: "internal_error" },
+      { error: "Erro interno do servidor" },
       { status: 500 }
     )
   }
