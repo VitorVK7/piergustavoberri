@@ -25,49 +25,27 @@ export function ContactForm() {
     }
   }
 
-  const [errorMsg, setErrorMsg] = useState("")
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    setErrorMsg("")
     
+    // Get form data
     const formData = new FormData(formRef.current!)
     const data = {
       name: formData.get("name") as string,
-      whatsapp: formData.get("whatsapp") as string,
       email: formData.get("email") as string,
+      phone: formData.get("whatsapp") as string,
       subject: formData.get("subject") as string,
-      message: formData.get("message") as string,
-      website: formData.get("website") as string,
-      source: "site",
     }
     
-    // Track the lead event via Meta Pixel
-    await trackFormSubmit({
-      name: data.name,
-      email: data.email,
-      phone: data.whatsapp,
-      subject: data.subject,
-    })
-
-    try {
-      const res = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      })
-
-      if (!res.ok) {
-        throw new Error("Erro ao enviar")
-      }
-
+    // Track the lead event
+    await trackFormSubmit(data)
+    
+    // Handle form submission
+    setTimeout(() => {
       setIsSubmitting(false)
       setIsSubmitted(true)
-    } catch {
-      setIsSubmitting(false)
-      setErrorMsg("Erro ao enviar. Tente novamente ou entre em contato pelo WhatsApp.")
-    }
+    }, 1000)
   }
 
   const handleNewMessage = () => {
@@ -109,10 +87,6 @@ export function ContactForm() {
               </div>
             ) : (
               <form ref={formRef} onSubmit={handleSubmit} onFocus={handleFormFocus} className="space-y-4 sm:space-y-5 md:space-y-6">
-                {/* Honeypot anti-spam */}
-                <div className="absolute opacity-0 pointer-events-none" aria-hidden="true">
-                  <input type="text" name="website" tabIndex={-1} autoComplete="off" />
-                </div>
                 <div className="space-y-1.5 sm:space-y-2">
                   <Label htmlFor="name" className="text-sm sm:text-base">Nome *</Label>
                   <Input id="name" name="name" required className="bg-background border-border h-11 sm:h-12 text-base" />
@@ -147,11 +121,6 @@ export function ContactForm() {
                   <Label htmlFor="message" className="text-sm sm:text-base">Mensagem *</Label>
                   <Textarea id="message" name="message" required rows={4} className="bg-background border-border text-base min-h-[120px] sm:min-h-[140px]" />
                 </div>
-                {errorMsg && (
-                  <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-                    {errorMsg}
-                  </div>
-                )}
                 <div className="space-y-1.5 sm:space-y-2">
                   <Button 
                     type="submit" 

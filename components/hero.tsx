@@ -35,15 +35,10 @@ export function Hero() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 h-14 text-base sm:text-lg px-8 w-full sm:w-auto shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/30">
-                <a href="#contato" className="flex items-center justify-center gap-2">
-                  Agendar consulta gratuita
+              <Button asChild size="lg" className="bg-[#25D366] text-white hover:bg-[#20BA5A] h-14 text-base sm:text-lg px-8 w-full sm:w-auto shadow-lg shadow-[#25D366]/25 transition-all hover:shadow-xl hover:shadow-[#25D366]/30">
+                <a href="https://wa.me/554733795482" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                  Falar pelo WhatsApp
                   <ArrowRight className="h-5 w-5" />
-                </a>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="h-14 text-base sm:text-lg px-8 w-full sm:w-auto border-2 bg-transparent">
-                <a href="#quem-e-pier" className="flex items-center justify-center gap-2">
-                  Conheça o escritório
                 </a>
               </Button>
             </div>
