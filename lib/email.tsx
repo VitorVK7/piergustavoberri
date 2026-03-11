@@ -1,6 +1,6 @@
-const RESEND_API_KEY = process.env.RESEND_API_KEY
-const NOTIFY_TO = process.env.LEADS_NOTIFY_EMAIL_TO || ""
-const NOTIFY_FROM = process.env.LEADS_NOTIFY_EMAIL_FROM || "leads@piergustavoberriadv.com.br"
+import { Resend } from "resend"
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 interface LeadData {
   name: string
@@ -12,82 +12,95 @@ interface LeadData {
   createdAt: string
 }
 
-const subjectLabels: Record<string, string> = {
-  "auxilio-acidente": "Auxilio-acidente",
-  "previdenciario": "Previdenciario",
-  "civil": "Civil",
-  "familia": "Familia",
-  "trabalho": "Trabalho",
-  "empresarial": "Empresarial",
-  "sucessoes": "Sucessoes",
-}
-
 export async function sendLeadNotification(lead: LeadData) {
-  if (!RESEND_API_KEY || !NOTIFY_TO) {
-    console.warn("[Email] RESEND_API_KEY or LEADS_NOTIFY_EMAIL_TO not configured, skipping email")
+  const emailTo = process.env.LEADS_NOTIFY_EMAIL_TO
+  const emailFrom = process.env.LEADS_NOTIFY_EMAIL_FROM || "onboarding@resend.dev"
+
+  if (!emailTo) {
+    console.log("[Email] LEADS_NOTIFY_EMAIL_TO not configured, skipping notification")
     return
   }
 
-  const subjectLabel = subjectLabels[lead.subject] || lead.subject
+  if (!process.env.RESEND_API_KEY) {
+    console.log("[Email] RESEND_API_KEY not configured, skipping notification")
+    return
+  }
+
+  const subjectMap: Record<string, string> = {
+    "auxilio-acidente": "Auxilio-acidente",
+    "previdenciario": "Previdenciario",
+    "civil": "Civil",
+    "familia": "Familia",
+    "trabalho": "Trabalho",
+    "empresarial": "Empresarial",
+    "sucessoes": "Sucessoes",
+  }
+
+  const subjectLabel = subjectMap[lead.subject] || lead.subject
 
   const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
-      <div style="background: #1a1a2e; padding: 24px; text-align: center;">
-        <h1 style="color: #c9a84c; margin: 0; font-size: 20px;">Novo Lead - Pier Gustavo Berri Advocacia</h1>
-      </div>
-      <div style="padding: 24px; border: 1px solid #e5e5e5; border-top: none;">
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-weight: bold; width: 120px; color: #333;">Data/Hora</td>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; color: #555;">${lead.createdAt}</td>
-          </tr>
-          <tr>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-weight: bold; color: #333;">Nome</td>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; color: #555;">${lead.name}</td>
-          </tr>
-          <tr>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-weight: bold; color: #333;">WhatsApp</td>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0;">
-              <a href="https://wa.me/55${lead.whatsapp.replace(/\D/g, "")}" style="color: #25D366; text-decoration: none;">${lead.whatsapp}</a>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-weight: bold; color: #333;">E-mail</td>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; color: #555;">${lead.email || "Nao informado"}</td>
-          </tr>
-          <tr>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; font-weight: bold; color: #333;">Assunto</td>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; color: #555;">${subjectLabel}</td>
-          </tr>
-          <tr>
-            <td style="padding: 12px; font-weight: bold; color: #333; vertical-align: top;">Mensagem</td>
-            <td style="padding: 12px; color: #555;">${lead.message.replace(/\n/g, "<br>")}</td>
-          </tr>
-        </table>
-        <div style="margin-top: 24px; padding: 16px; background: #f8f9fa; border-radius: 8px; text-align: center;">
-          <p style="margin: 0 0 8px 0; font-size: 13px; color: #888;">Origem: ${lead.source}</p>
-          <a href="https://wa.me/55${lead.whatsapp.replace(/\D/g, "")}" style="display: inline-block; padding: 10px 24px; background: #25D366; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold;">Responder via WhatsApp</a>
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #1a365d; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .field { margin-bottom: 15px; }
+        .label { font-weight: bold; color: #1a365d; }
+        .value { margin-top: 5px; padding: 10px; background: white; border-radius: 4px; }
+        .footer { padding: 15px; text-align: center; font-size: 12px; color: #666; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Novo Lead - Pier Gustavo Berri Advocacia</h1>
+        </div>
+        <div class="content">
+          <div class="field">
+            <div class="label">Data/Hora:</div>
+            <div class="value">${lead.createdAt}</div>
+          </div>
+          <div class="field">
+            <div class="label">Nome:</div>
+            <div class="value">${lead.name}</div>
+          </div>
+          <div class="field">
+            <div class="label">WhatsApp:</div>
+            <div class="value">${lead.whatsapp}</div>
+          </div>
+          <div class="field">
+            <div class="label">E-mail:</div>
+            <div class="value">${lead.email || "Nao informado"}</div>
+          </div>
+          <div class="field">
+            <div class="label">Assunto:</div>
+            <div class="value">${subjectLabel}</div>
+          </div>
+          <div class="field">
+            <div class="label">Mensagem:</div>
+            <div class="value">${lead.message.replace(/\n/g, "<br>")}</div>
+          </div>
+          <div class="field">
+            <div class="label">Origem:</div>
+            <div class="value">${lead.source}</div>
+          </div>
+        </div>
+        <div class="footer">
+          Este e-mail foi enviado automaticamente pelo sistema de leads do site.
         </div>
       </div>
-    </div>
+    </body>
+    </html>
   `
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: NOTIFY_FROM,
-      to: NOTIFY_TO.split(",").map((e: string) => e.trim()),
-      subject: `Novo Lead: ${lead.name} - ${subjectLabel}`,
-      html,
-    }),
+  await resend.emails.send({
+    from: emailFrom,
+    to: emailTo,
+    subject: `Novo Lead: ${lead.name} - ${subjectLabel}`,
+    html,
   })
-
-  if (!response.ok) {
-    const error = await response.text()
-    throw new Error(`Resend API error: ${error}`)
-  }
 }
