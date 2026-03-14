@@ -36,7 +36,7 @@ export function Hero() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button asChild size="lg" className="bg-[#25D366] text-white hover:bg-[#20BA5A] h-14 text-base sm:text-lg px-8 w-full sm:w-auto shadow-lg shadow-[#25D366]/25 transition-all hover:shadow-xl hover:shadow-[#25D366]/30">
-                <a href="https://wa.me/554733795482" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                <a href="https://wa.me/554733795482?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
                   Falar pelo WhatsApp
                   <ArrowRight className="h-5 w-5" />
                 </a>

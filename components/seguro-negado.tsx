@@ -74,7 +74,7 @@ export function SeguroNegado() {
                 size="lg"
                 className="bg-[#25D366] text-white hover:bg-[#20BA5A] text-base sm:text-lg px-6 sm:px-8 h-12 sm:h-14 w-full sm:w-auto"
               >
-                <a href="https://wa.me/554733795482" target="_blank" rel="noopener noreferrer">
+                <a href="https://wa.me/554733795482?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es" target="_blank" rel="noopener noreferrer">
                   Falar com advogado agora
                 </a>
               </Button>
