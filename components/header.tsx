@@ -62,11 +62,6 @@ export function Header() {
               <Phone className="h-4 w-4" />
               <span className="hidden xl:inline">Massaranduba/SC</span>
             </a>
-            <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <a href="#contato">
-                Falar com a equipe
-              </a>
-            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -93,13 +88,7 @@ export function Header() {
                 {item.label}
               </a>
             ))}
-            <div className="pt-4 mt-2 border-t border-border">
-              <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 w-full h-12 text-base">
-                <a href="#contato" onClick={handleNavClick}>
-                  Falar com a equipe
-                </a>
-              </Button>
-            </div>
+            
           </nav>
         </div>
       </div>

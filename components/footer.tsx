@@ -48,7 +48,7 @@ export function Footer() {
                 <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 mt-0.5 flex-shrink-0" />
                 <span>(47) 3370-7000</span>
               </a>
-              <a href="https://wa.me/554733795482" className="flex items-start gap-2 text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors">
+              <a href="https://wa.me/554733795482?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es" className="flex items-start gap-2 text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors">
                 <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 mt-0.5 flex-shrink-0" />
                 <span>+55 47 3379-5482</span>
               </a>
