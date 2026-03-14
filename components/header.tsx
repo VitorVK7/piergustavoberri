@@ -60,7 +60,7 @@ export function Header() {
           <div className="hidden lg:flex items-center gap-4">
             <a href="tel:+554733795482" className="text-sm text-muted-foreground hover:text-primary flex items-center gap-2 transition-colors">
               <Phone className="h-4 w-4" />
-              <span className="hidden xl:inline">Massaranduba/SC</span>
+              <span>(47) 3379-5482</span>
             </a>
           </div>
 
