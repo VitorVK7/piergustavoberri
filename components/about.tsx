@@ -106,10 +106,7 @@ export function About() {
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 80vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
-              <div className="absolute bottom-6 left-6 right-6">
-                <p className="text-white font-medium text-lg drop-shadow-lg">Nossa equipe está pronta para ajudar você</p>
-              </div>
+              
             </div>
           </div>
         </div>
