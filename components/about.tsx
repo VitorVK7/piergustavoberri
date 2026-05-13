@@ -94,21 +94,7 @@ export function About() {
             </div>
           </div>
 
-          {/* Team photo */}
-          <div className="relative">
-            <div className="absolute -top-4 -left-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl" />
-            <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
-            <div className="relative aspect-video sm:aspect-[21/9] rounded-2xl overflow-hidden border-2 border-border shadow-xl">
-              <Image
-                src="/images/1280-2871-20-281-29.jpeg"
-                alt="Equipe Pier Gustavo Berri Advocacia"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 80vw"
-              />
-              
-            </div>
-          </div>
+          
         </div>
       </div>
     </section>
